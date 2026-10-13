@@ -1,0 +1,101 @@
+:root {
+  --bg-dark: #0d111c;
+  --bg-mid: #1a2133;
+  --card: #121827;
+  --yellow: #fbb91b;
+  --text: #c9ced9;
+}
+
+body { font-family: 'Barlow', sans-serif; background: var(--bg-dark); color: var(--text); }
+h1, h2, h3, h4, h5, h6, .brand { font-family: 'Oswald', sans-serif; color: #fff; }
+.text-yellow, a.text-yellow { color: var(--yellow) !important; }
+
+.topbar { background: var(--bg-mid); font-size: 14px; }
+.topbar i { color: var(--yellow); margin-inline-end: 6px; }
+.topbar a { color: inherit; text-decoration: none; }
+.topbar a:hover { color: var(--yellow); }
+.topbar-days { font-size: 12px; opacity: .7; }
+
+.main-nav { background: var(--bg-dark); padding: 14px 0; }
+.brand { font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+.brand i { color: var(--yellow); }
+.main-nav .nav-link { color: #fff; font-weight: 500; margin: 0 6px; }
+.main-nav .nav-link:hover { color: var(--yellow); }
+
+.btn-garagak {
+  background: var(--yellow); color: #111; font-weight: 600;
+  text-transform: uppercase; border-radius: 0; padding: 10px 24px; border: none;
+}
+.btn-garagak:hover { background: #e5a600; color: #111; }
+.btn-filter { background: var(--bg-mid); color: #fff; border-radius: 0; border: 1px solid transparent; }
+.btn-filter:hover, .btn-filter.active { background: var(--yellow); color: #111; }
+
+.hero {
+  min-height: 560px; display: flex; align-items: center;
+  background:
+    radial-gradient(circle at 80% 30%, rgba(251,185,27,.18), transparent 45%),
+    linear-gradient(135deg, #0d111c 40%, #1a2133);
+}
+.eyebrow { color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
+.hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.15; }
+.hero-icon { font-size: 14rem; color: var(--yellow); opacity: .9; }
+
+.features { margin-top: -70px; position: relative; z-index: 2; }
+.feature-card { background: var(--bg-mid); padding: 28px; height: 100%; }
+.feature-card.active { background: var(--yellow); color: #111; }
+.feature-card.active h5 { color: #111; }
+
+.section { padding: 80px 0; }
+.section-alt { background: var(--bg-mid); }
+
+.step { background: var(--bg-mid); padding: 28px; height: 100%; text-align: center; }
+.step i { font-size: 2.5rem; color: var(--yellow); }
+.section-alt .step { background: var(--card); }
+
+.form-box { background: var(--bg-mid); padding: 28px; }
+.form-box label { color: #fff; font-weight: 500; margin-bottom: 6px; display: block; }
+.form-box .form-control { border-radius: 0; background: #fff; color: #111; margin-bottom: 16px; }
+
+.result-box { background: var(--bg-mid); padding: 28px; }
+
+.cat-card { background: var(--card); position: relative; height: 100%; transition: transform .2s; }
+.cat-card:hover { transform: translateY(-6px); }
+.cat-visual {
+  height: 160px; display: grid; place-items: center;
+  background: linear-gradient(135deg, #1a2133, #0d111c); color: var(--yellow); font-size: 4rem;
+}
+.history-img { width: 100%; height: 200px; object-fit: cover; }
+.cat-card .icon-badge {
+  position: absolute; top: 0; right: 0; background: var(--yellow); color: #111;
+  width: 48px; height: 48px; display: grid; place-items: center; font-size: 22px; z-index: 1;
+}
+.cat-card .body { padding: 20px; color: var(--text); }
+.cat-card .more { color: var(--yellow); text-transform: uppercase; font-size: 14px; }
+
+.garage-card { background: var(--bg-mid); padding: 22px; height: 100%; border-left: 4px solid var(--yellow); }
+.garage-card .tag {
+  background: var(--yellow); color: #111; font-size: 12px; font-weight: 600;
+  padding: 2px 8px; text-transform: uppercase;
+}
+.garage-card h5 { margin-top: 10px; }
+
+.sev-low { background: #28a745; }
+.sev-medium { background: #fd7e14; }
+.sev-high { background: #dc3545; }
+
+.footer { background: var(--bg-mid); font-size: 14px; }
+
+/* Arabic / RTL */
+html[lang="ar"] body,
+html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3,
+html[lang="ar"] h4, html[lang="ar"] h5, html[lang="ar"] h6,
+html[lang="ar"] .brand { font-family: 'Cairo', sans-serif; }
+
+html[lang="ar"] .eyebrow,
+html[lang="ar"] .brand,
+html[lang="ar"] .btn-garagak,
+html[lang="ar"] .cat-card .more { letter-spacing: 0; text-transform: none; }
+
+html[dir="rtl"] .bi-arrow-right { display: inline-block; transform: scaleX(-1); }
+html[dir="rtl"] .cat-card .icon-badge { right: auto; left: 0; }
+html[dir="rtl"] .garage-card { border-left: none; border-right: 4px solid var(--yellow); }
