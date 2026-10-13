@@ -28,14 +28,26 @@ class LoginForm(StyledMixin, AuthenticationForm):
     pass
 
 
-class DiagnosisForm(forms.Form):
+class DiagnosisForm(StyledMixin, forms.Form):
     car_make = forms.CharField(min_length=2, max_length=40)
-    image = forms.ImageField()
+    description = forms.CharField(
+        required=False, max_length=1000,
+        widget=forms.Textarea(attrs={'rows': 6}),
+    )
+    image = forms.ImageField(required=False)
 
     def clean_image(self):
-        img = self.cleaned_data['image']
+        img = self.cleaned_data.get('image')
+        if not img:
+            return None
         if img.size > 5 * 1024 * 1024:
             raise forms.ValidationError('Image must be under 5MB.')
         if img.content_type not in ('image/jpeg', 'image/png', 'image/webp'):
             raise forms.ValidationError('Only JPG, PNG or WEBP images are allowed.')
         return img
+
+    def clean(self):
+        data = super().clean()
+        if not data.get('description') and not data.get('image') and not self.errors:
+            raise forms.ValidationError('Please describe the problem or upload a photo.')
+        return data

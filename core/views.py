@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
 from .forms import RegisterForm, LoginForm, DiagnosisForm
@@ -50,7 +51,7 @@ def register_view(request):
     form = RegisterForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         login(request, form.save())
-        return redirect('home')
+        return redirect('diagnose')
     return render(request, 'auth.html', {'form': form, 'title': 'Register', 'button': 'Create account'})
 
 
@@ -58,7 +59,10 @@ def login_view(request):
     form = LoginForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         login(request, form.get_user())
-        return redirect(request.GET.get('next') or 'home')
+        next_url = request.GET.get('next')
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+            return redirect(next_url)
+        return redirect('diagnose')
     return render(request, 'auth.html', {'form': form, 'title': 'Login', 'button': 'Login', 'is_login': True})
 
 
@@ -77,11 +81,12 @@ def diagnose(request):
             return JsonResponse({'ok': False, 'errors': errors}, status=400)
 
         car_make = form.cleaned_data['car_make']
+        description = form.cleaned_data['description']
         image = form.cleaned_data['image']
-        result = diagnose_image(image, car_make)
+        result = diagnose_image(image, car_make, description)
 
         Diagnosis.objects.create(
-            user=request.user, car_make=car_make, image=image,
+            user=request.user, car_make=car_make, description=description, image=image,
             problem=result['problem'], solution=result['solution'], severity=result['severity'],
         )
 

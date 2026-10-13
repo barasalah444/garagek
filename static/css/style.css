@@ -94,8 +94,67 @@ html[lang="ar"] .brand { font-family: 'Cairo', sans-serif; }
 html[lang="ar"] .eyebrow,
 html[lang="ar"] .brand,
 html[lang="ar"] .btn-garagak,
-html[lang="ar"] .cat-card .more { letter-spacing: 0; text-transform: none; }
+html[lang="ar"] .cat-card .more,
+html[lang="ar"] .auth-card .btn-warning { letter-spacing: 0; text-transform: none; }
 
 html[dir="rtl"] .bi-arrow-right { display: inline-block; transform: scaleX(-1); }
 html[dir="rtl"] .cat-card .icon-badge { right: auto; left: 0; }
 html[dir="rtl"] .garage-card { border-left: none; border-right: 4px solid var(--yellow); }
+
+/* صفحة الدخول والتسجيل: صورة الكراج */
+.auth-stage {
+  position: relative; min-height: 600px; display: flex; align-items: center; justify-content: center;
+  padding: 60px 16px;
+  background: linear-gradient(rgba(13,17,28,.82), rgba(13,17,28,.9)), url('../img/auth-bg.jpg') center/cover no-repeat;
+}
+.auth-card {
+  position: relative; width: 100%; max-width: 440px; margin-bottom: 0; padding: 36px 40px;
+  background: rgba(18,24,39,.94); border: 1px solid rgba(255,255,255,.1); border-top: 4px solid var(--yellow);
+  border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.5); color: var(--text);
+}
+.auth-card h2 { color: #fff; margin-bottom: 24px; }
+.auth-card .form-label { color: var(--text); }
+.auth-card .form-control { background: var(--bg-mid); border-color: rgba(255,255,255,.12); color: #fff; }
+.auth-card .btn-warning { background: var(--yellow); border-color: var(--yellow); color: #0d111c; font-weight: 700; text-transform: uppercase; }
+.auth-card a { color: var(--yellow); }
+
+/* صفحة التشخيص */
+.dx-page { background: radial-gradient(circle at 85% 10%, rgba(251,185,27,.12), transparent 40%), var(--bg-dark); }
+.dx-title { font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 700; line-height: 1.15; margin-bottom: 10px; }
+.dx-tagline { color: var(--yellow); font-weight: 500; margin-bottom: 14px; }
+html[lang="ar"] .dx-title { line-height: 1.4; }
+.dx-sub { font-size: 1.1rem; max-width: 760px; line-height: 1.8; }
+.dx-chips { display: flex; flex-wrap: wrap; gap: 12px; }
+.dx-chip { border: 1px solid rgba(255,255,255,.15); padding: 8px 16px; border-radius: 30px; font-size: 14px; color: #fff; }
+.dx-chip b { color: var(--yellow); }
+.dx-box { background: var(--card); border: 1px solid rgba(255,255,255,.08); border-top: 4px solid var(--yellow); border-radius: 10px; padding: 30px; }
+.dx-box h4 { color: #fff; margin-bottom: 4px; }
+.dx-hint { font-size: 13px; opacity: .8; margin-bottom: 12px; }
+.dx-label { color: #fff; margin-bottom: 6px; display: block; }
+.dx-box .form-control { background: var(--bg-mid); border-color: rgba(255,255,255,.12); color: #fff; border-radius: 8px; }
+.dx-box .form-control:focus { background: var(--bg-mid); color: #fff; border-color: var(--yellow); box-shadow: 0 0 0 .2rem rgba(251,185,27,.2); }
+.dx-box textarea.form-control { height: 190px; resize: none; }
+.dx-box input[type="file"] { display: none; }
+.dx-drop { height: 190px; border: 2px dashed rgba(251,185,27,.5); border-radius: 8px; background: rgba(251,185,27,.04); display: flex; align-items: center; justify-content: center; text-align: center; cursor: pointer; overflow: hidden; color: #fff; }
+.dx-drop:hover, .dx-drop.drag { background: rgba(251,185,27,.1); }
+.dx-drop i { display: block; font-size: 2.4rem; color: var(--yellow); }
+.dx-drop img { width: 100%; height: 100%; object-fit: cover; }
+html[lang="ar"] .dx-box .btn-garagak { letter-spacing: 0; text-transform: none; }
+
+/* زر المايك */
+.dx-textwrap { position: relative; }
+.dx-textwrap textarea.form-control { padding-bottom: 56px; }
+.dx-mic {
+  position: absolute; bottom: 12px; inset-inline-end: 12px;
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: var(--yellow); color: #111; font-size: 20px;
+  display: grid; place-items: center; cursor: pointer; transition: transform .15s;
+}
+.dx-mic:hover { transform: scale(1.08); }
+.dx-mic.rec { background: #dc3545; color: #fff; animation: micPulse 1.2s infinite; }
+@keyframes micPulse {
+  0% { box-shadow: 0 0 0 0 rgba(220,53,69,.6); }
+  100% { box-shadow: 0 0 0 16px rgba(220,53,69,0); }
+}
+.dx-mic-status { color: var(--yellow); min-height: 20px; }
+#dxProblem, #dxSolution { white-space: pre-line; line-height: 1.9; }

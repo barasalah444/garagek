@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="section dx-page">
+  <div class="container" style="max-width:1000px">
+    <h1 class="dx-title" data-i18n="dx_title">مساعدك الذكي للأعطال</h1>
+    <h4 class="dx-tagline" data-i18n="dx_tagline">من الكلمة للصورة.. بنفهم مشكلة سيارتك</h4>
+    <p class="dx-sub mb-4" data-i18n="dx_sub">اكتب وصف العطل أو ارفع صورة له، أو الاثنين معاً. بنعطيك التشخيص والحل وأقرب كراج بثواني.</p>
+
+    <div class="dx-chips mb-4">
+      <span class="dx-chip"><b>1</b> <span data-i18n="dx_chip1">اكتب العطل</span></span>
+      <span class="dx-chip"><b>2</b> <span data-i18n="dx_chip2">أو صوّره</span></span>
+      <span class="dx-chip"><b>★</b> <span data-i18n="dx_chip3">الاثنين معاً أدق</span></span>
+    </div>
+
+    <form id="dxForm" class="dx-box" novalidate>
+      {% csrf_token %}
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h4 data-i18n="dx_write">اكتب المشكلة</h4>
+          <p class="dx-hint" data-i18n="dx_write_hint">مثلاً: صوت طقطقة من الأمام عند الدوران، ولمبة الموتور مشتعلة</p>
+          <div class="dx-textwrap">
+            {{ form.description }}
+            <button type="button" id="dxMic" class="dx-mic" title="سجّل صوتك" aria-label="Voice input">
+              <i class="bi bi-mic-fill"></i>
+            </button>
+          </div>
+          <div class="dx-mic-status small mt-1" id="dxMicStatus"></div>
+          <div class="text-danger small mt-1" id="err_description"></div>
+        </div>
+        <div class="col-md-6">
+          <h4 data-i18n="dx_photo">ارفع صورة</h4>
+          <p class="dx-hint" data-i18n="dx_photo_hint">لمبة تحذير، تسريب، جزء تالف... (JPG / PNG حتى 5MB)</p>
+          <label for="{{ form.image.id_for_label }}" class="dx-drop" id="dxDrop">
+            <img id="preview" class="d-none" alt="">
+            <span id="dxDropText">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span data-i18n="dx_drop">اضغط أو اسحب الصورة هنا</span>
+            </span>
+          </label>
+          {{ form.image }}
+          <div class="text-danger small mt-1" id="err_image"></div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-2 align-items-end">
+        <div class="col-md-8">
+          <label for="{{ form.car_make.id_for_label }}" class="dx-label" data-i18n="dx_make">ماركة السيارة</label>
+          {{ form.car_make }}
+          <div class="text-danger small mt-1" id="err_car_make"></div>
+        </div>
+        <div class="col-md-4">
+          <button type="submit" id="dxBtn" class="btn btn-garagak w-100">
+            <span data-i18n="dx_btn">شخّص الآن</span>
+          </button>
+        </div>
+      </div>
+      <div class="text-danger mt-3" id="err___all__"></div>
+      <input type="hidden" name="lat" id="lat">
+      <input type="hidden" name="lng" id="lng">
+    </form>
+
+    <div id="dxLoading" class="d-none text-center my-4">
+      <div class="spinner-border text-warning" role="status"></div>
+      <p class="mt-2 mb-0" data-i18n="dx_loading">جاري التحليل...</p>
+    </div>
+
+    <div id="dxResult" class="result-box mt-4 d-none">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0" data-i18n="dx_result">نتيجة التشخيص</h3>
+        <span id="dxSev" class="badge fs-6"></span>
+      </div>
+      <h5 data-i18n="dx_problem">المشكلة</h5>
+      <p id="dxProblem"></p>
+      <h5 data-i18n="dx_solution">الحل</h5>
+      <p id="dxSolution" class="mb-0"></p>
+    </div>
+
+    <div id="dxNearby" class="d-none mt-5">
+      <h3 class="mb-3" data-i18n="dx_nearby">أقرب الكراجات المناسبة</h3>
+      <div id="dxGarages" class="row g-3"></div>
+    </div>
+  </div>
+</section>
+<script src="{% static 'js/diagnose.js' %}"></script>
+{% endblock %}

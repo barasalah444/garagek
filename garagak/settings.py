@@ -10,10 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load secrets (API keys) from the .env file
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -131,5 +137,6 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
-ANTHROPIC_API_KEY = ''
-AI_MODEL = 'claude-sonnet-5-5'
+# AI (Gemini) - the key is read from the .env file, never written here
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+AI_MODEL = 'gemini-3.8-flash'

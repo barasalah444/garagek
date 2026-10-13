@@ -28,7 +28,8 @@ class Garage(models.Model):
 class Diagnosis(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diagnoses')
     car_make = models.CharField(max_length=40)
-    image = models.ImageField(upload_to='faults/')
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='faults/', blank=True, null=True)
     problem = models.TextField()
     solution = models.TextField()
     severity = models.CharField(max_length=10, default='medium')
