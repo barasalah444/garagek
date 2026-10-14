@@ -295,3 +295,26 @@ html[lang="ar"] .brand-tag { letter-spacing: 0; font-size: 12px; }
 #ptResult a:not(.btn):hover {
   color: #fff;
 }
+.form-control::placeholder {
+  color: #8a93a6;
+  opacity: 1;
+}
+/* حقول صفحة قطع الغيار: نفس مظهر صفحة التشخيص */
+#ptForm .form-control {
+  background: var(--bg-mid);
+  border: 1px solid #2a3350;
+  color: #fff;
+}
+#ptForm .form-control:focus {
+  background: var(--bg-mid);
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 .2rem rgba(251, 185, 27, .2);
+  color: #fff;
+}
+.form-control::placeholder {
+  color: #8a93a6;
+  opacity: 1;
+}
+#ptSources a {
+  unicode-bidi: isolate;
+}

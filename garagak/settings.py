@@ -22,16 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-fa02v1r2=0)-00c0$^2=_x+9xi$h$i+*f---idv+%p_on84fb5'
+# SECURITY WARNING: on the server, SECRET_KEY comes from .env (the fallback is for local development only)
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-fa02v1r2=0)-00c0$^2=_x+9xi$h$i+*f---idv+%p_on84fb5')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Locally DEBUG is True; on the server set DEBUG=False in .env
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+# On the server: ALLOWED_HOSTS=yourdomain.com,1.2.3.4 in .env
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h.strip()]
+
+# On the server (with HTTPS): CSRF_TRUSTED_ORIGINS=https://yourdomain.com in .env
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()]
 
 
 # Application definition
@@ -122,13 +126,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+# collectstatic copies everything here; Nginx serves this folder in production
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-STATICFILES_DIRS = [BASE_DIR / 'static']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -140,3 +145,10 @@ LOGOUT_REDIRECT_URL = 'home'
 # AI (Gemini) - the key is read from the .env file, never written here
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 AI_MODEL = 'gemini-3.8-flash'
+
+# Extra security in production once HTTPS is enabled (set USE_HTTPS=1 in .env on the server)
+if not DEBUG and os.environ.get('USE_HTTPS') == '1':
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
