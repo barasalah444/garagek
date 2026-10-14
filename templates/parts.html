@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<section class="dx-page">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h1 class="dx-title" data-i18n="pt_title">باحث قطع الغيار</h1>
+      <p class="dx-sub" data-i18n="pt_sub">صوّر القطعة، وبنحدد لك اسمها وبدائلها وأين تشتريها.</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <form id="ptForm" method="post" enctype="multipart/form-data" class="dx-card" novalidate>
+          {% csrf_token %}
+
+          <label class="form-label" data-i18n="pt_photo">صورة القطعة</label>
+          <label class="dx-drop" id="ptDrop" for="id_image">
+            <img id="ptPreview" class="d-none" alt="">
+            <span id="ptDropText" data-i18n="pt_drop">اضغط هنا أو اسحب صورة القطعة (JPG / PNG / WEBP، حتى 5MB)</span>
+          </label>
+          <div class="d-none">{{ form.image }}</div>
+          <div class="text-danger small mb-3" id="err_image"></div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label" for="id_car_make" data-i18n="pt_make">ماركة السيارة</label>
+              {{ form.car_make }}
+              <div class="text-danger small" id="err_car_make"></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="id_car_model" data-i18n="pt_model">الموديل</label>
+              {{ form.car_model }}
+              <div class="text-danger small" id="err_car_model"></div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" for="id_car_year" data-i18n="pt_year">سنة الصنع</label>
+              {{ form.car_year }}
+              <div class="text-danger small" id="err_car_year"></div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="id_part_number" data-i18n="pt_pn">رقم القطعة (إن وُجد، يزيد الدقة كثيراً)</label>
+            {{ form.part_number }}
+            <div class="text-danger small" id="err_part_number"></div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="id_description" data-i18n="pt_desc">ملاحظة (مكان القطعة بالسيارة، أو ما تعرفه عنها)</label>
+            {{ form.description }}
+            <div class="text-danger small" id="err_description"></div>
+          </div>
+
+          <input type="hidden" name="lang" id="ptLang" value="ar">
+
+          <div class="text-danger small mb-2" id="err___all__"></div>
+          <button type="submit" class="btn btn-warning w-100 fw-bold" id="ptBtn" data-i18n="pt_btn">ابحث عن القطعة</button>
+        </form>
+
+        <div id="ptLoading" class="text-center my-4 d-none">
+          <div class="spinner-border text-warning"></div>
+          <p class="mt-2" data-i18n="pt_loading">جاري التعرف على القطعة والبحث عنها... قد يستغرق دقيقة</p>
+        </div>
+
+        <div id="ptResult" class="dx-card mt-4 d-none">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <h2 class="h4 mb-0" id="ptName"></h2>
+            <span id="ptConf" class="badge fs-6"></span>
+          </div>
+          <p id="ptFunction" class="mb-3"></p>
+
+          <div id="ptLow" class="alert alert-warning d-none">
+            <strong data-i18n="pt_low">لم نتأكد من القطعة، ولن نعرض روابط شراء حتى لا نعطيك قطعة خاطئة.</strong>
+            <div id="ptMissing" class="mt-1"></div>
+          </div>
+
+          <h3 class="h6 text-warning" data-i18n="pt_why">كيف تعرفنا عليها</h3>
+          <p id="ptReason" class="mb-3"></p>
+
+          <div id="ptAltBox" class="d-none">
+            <h3 class="h6 text-warning" data-i18n="pt_alts">البدائل</h3>
+            <ul id="ptAlts" class="mb-3"></ul>
+          </div>
+
+          <div id="ptBuyBox" class="d-none">
+            <h3 class="h6 text-warning" data-i18n="pt_buy">أين تشتريها</h3>
+            <p id="ptBuyText" class="mb-3"></p>
+
+            <h3 class="h6 text-warning" data-i18n="pt_sources">مصادر وجدها البحث</h3>
+            <ul id="ptSources" class="mb-3"></ul>
+
+            <h3 class="h6 text-warning" data-i18n="pt_search">ابحث بنفسك</h3>
+            <div id="ptLinks" class="d-flex flex-wrap gap-2 mb-3"></div>
+
+            <p class="small text-secondary mb-0" data-i18n="pt_warn">تنبيه: كراجك لا يبيع القطع ولا يشحنها، نحن نساعدك بالتعرف عليها وإيجاد مصادرها فقط. الأسعار والتوفر والشحن إلى فلسطين تختلف من متجر لآخر، وتأكد من رقم القطعة قبل الشراء.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/parts.js' %}"></script>
+{% endblock %}

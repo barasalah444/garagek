@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="dx-page">
+  <div class="container">
+    <div class="text-center mb-4">
+      <h1 class="dx-title" data-i18n="hist_title">تشخيصاتي السابقة</h1>
+      <p class="dx-sub" data-i18n="hist_sub">كل تشخيصاتك محفوظة هون.</p>
+    </div>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        {% for d in diagnoses %}
+        <div class="hist-card dx-card mb-3">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <div>
+              <h2 class="h5 mb-1">{{ d.car_make }}</h2>
+              <small class="text-secondary" dir="ltr">{{ d.created_at|date:"Y-m-d H:i" }}</small>
+            </div>
+            <span class="badge fs-6 sev-{{ d.severity }}" data-i18n="sev_{{ d.severity }}">{{ d.severity }}</span>
+          </div>
+
+          {% if d.description %}
+          <p class="mb-2"><strong data-i18n="hist_yours">وصفك للعطل</strong>: {{ d.description }}</p>
+          {% endif %}
+          {% if d.image %}
+          <p class="mb-2 small text-warning"><i class="bi bi-image"></i> <span data-i18n="hist_photo">مع صورة</span></p>
+          {% endif %}
+
+          <button class="btn btn-outline-warning btn-sm" type="button"
+                  data-bs-toggle="collapse" data-bs-target="#h{{ d.id }}"
+                  data-i18n="hist_show">عرض التفاصيل</button>
+
+          <div class="collapse mt-3" id="h{{ d.id }}">
+            <h3 class="h6 text-warning" data-i18n="dx_problem">المشكلة</h3>
+            <p style="white-space: pre-line">{{ d.problem }}</p>
+            <h3 class="h6 text-warning" data-i18n="dx_solution">الحل</h3>
+            <p class="mb-0" style="white-space: pre-line">{{ d.solution }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <div class="dx-card text-center">
+          <p class="mb-3" data-i18n="hist_empty">ما عندك تشخيصات بعد.</p>
+          <a href="{% url 'diagnose' %}" class="btn btn-garagak" data-i18n="hist_start">ابدأ أول تشخيص</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,4 +1,5 @@
 import math
+import re
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,9 +7,9 @@ from django.http import JsonResponse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 
-from .forms import RegisterForm, LoginForm, DiagnosisForm
+from .forms import RegisterForm, LoginForm, DiagnosisForm, PartForm
 from .models import Garage, Diagnosis, ORIGINS
-from .ai import diagnose_image, guess_origin
+from .ai import diagnose_image, guess_origin, identify_part
 
 
 def haversine(lat1, lng1, lat2, lng2):
@@ -103,11 +104,49 @@ def diagnose(request):
     return render(request, 'diagnose.html', {'form': DiagnosisForm()})
 
 
+def detect_lang(text, fallback):
+    """اللغة بتتبع كتابة الزبون: عربي بالوصف = عربي، إنجليزي = إنجليزي، وإلا لغة الموقع."""
+    if re.search(r'[\u0600-\u06FF]', text or ''):
+        return 'ar'
+    if re.search(r'[A-Za-z]{3,}', text or ''):
+        return 'en'
+    return fallback
+
+
+@login_required
+def parts(request):
+    if request.method == 'POST':
+        form = PartForm(request.POST, request.FILES)
+        if not form.is_valid():
+            errors = {f: [str(e) for e in errs] for f, errs in form.errors.items()}
+            return JsonResponse({'ok': False, 'errors': errors}, status=400)
+
+        d = form.cleaned_data
+        site_lang = 'en' if request.POST.get('lang') == 'en' else 'ar'
+        lang = detect_lang(d.get('description', ''), site_lang)
+        info = identify_part(
+            d.get('image'), d['car_make'], d['car_model'], d['car_year'],
+            d.get('part_number', ''), d.get('description', ''), lang)
+
+        if info is None:
+            return JsonResponse({'ok': False, 'errors': {
+                '__all__': ['AI service is busy, please try again in a few minutes.']}}, status=503)
+
+        info['ok'] = True
+        return JsonResponse(info)
+
+    return render(request, 'parts.html', {'form': PartForm()})
+
+
+@login_required
 def garages(request):
     return render(request, 'garages.html', {'origins': ORIGINS})
 
 
 def garages_api(request):
+    # الـAPI بيرجع JSON، فبنرجع 401 بدل ما نحوّل لصفحة تسجيل الدخول
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'login required'}, status=401)
     origin = request.GET.get('origin') or None
     lat, lng = get_coords(request.GET)
     return JsonResponse({'garages': garages_data(origin, lat, lng)})

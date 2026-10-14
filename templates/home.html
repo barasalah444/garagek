@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <section class="hero">
@@ -10,9 +11,6 @@
         <p class="col-lg-9 mt-3" data-i18n="hero_text"></p>
         <a href="{% url 'diagnose' %}" class="btn btn-garagak mt-3" data-i18n="btn_diagnose_now"></a>
         <a href="{% url 'garages' %}" class="btn btn-outline-light rounded-0 mt-3 ms-2" data-i18n="btn_browse"></a>
-      </div>
-      <div class="col-lg-5 d-none d-lg-block text-center">
-        <i class="bi bi-car-front-fill hero-icon"></i>
       </div>
     </div>
   </div>
@@ -50,7 +48,9 @@
         <a href="{% url 'garages' %}?origin={{ slug }}" class="text-decoration-none">
           <div class="cat-card">
             <span class="icon-badge"><i class="bi bi-wrench-adjustable"></i></span>
-            <div class="cat-visual"><i class="bi bi-car-front"></i></div>
+            <div class="cat-visual">
+              <span class="fi cat-flag fi-{% if slug == 'german' %}de{% elif slug == 'japanese' %}jp{% elif slug == 'korean' %}kr{% elif slug == 'american' %}us{% elif slug == 'chinese' %}cn{% elif slug == 'french' %}fr{% endif %}"></span>
+            </div>
             <div class="body">
               <h5 data-i18n="cars_{{ slug }}"></h5>
               <p data-i18n="desc_{{ slug }}"></p>

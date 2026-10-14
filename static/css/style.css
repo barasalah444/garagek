@@ -32,13 +32,33 @@ h1, h2, h3, h4, h5, h6, .brand { font-family: 'Oswald', sans-serif; color: #fff;
 
 .hero {
   min-height: 560px; display: flex; align-items: center;
-  background:
-    radial-gradient(circle at 80% 30%, rgba(251,185,27,.18), transparent 45%),
-    linear-gradient(135deg, #0d111c 40%, #1a2133);
+  position: relative; overflow: hidden; background: #0d111c;
 }
 .eyebrow { color: var(--yellow); text-transform: uppercase; letter-spacing: 1px; font-size: 14px; }
 .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 700; line-height: 1.15; }
 .hero-icon { font-size: 14rem; color: var(--yellow); opacity: .9; }
+
+/* ===== Hero background photo ===== */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url('../img/hero.jpg') center 35% / cover no-repeat;
+  transform: scaleX(-1);          /* نقلب الصورة عشان الميكانيكي يصير عكس النص */
+  z-index: 0;
+}
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(270deg, rgba(13,17,28,.96) 0%, rgba(13,17,28,.82) 45%, rgba(13,17,28,.3) 100%);
+  z-index: 0;
+}
+.hero > .container { position: relative; z-index: 1; }
+
+/* بالإنجليزي النص على الشمال، فبنعكس الاتجاه */
+html[dir="ltr"] .hero::before { transform: none; }
+html[dir="ltr"] .hero::after {
+  background: linear-gradient(90deg, rgba(13,17,28,.96) 0%, rgba(13,17,28,.82) 45%, rgba(13,17,28,.3) 100%);
+}
 
 .features { margin-top: -70px; position: relative; z-index: 2; }
 .feature-card { background: var(--bg-mid); padding: 28px; height: 100%; }
@@ -158,3 +178,120 @@ html[lang="ar"] .dx-box .btn-garagak { letter-spacing: 0; text-transform: none; 
 }
 .dx-mic-status { color: var(--yellow); min-height: 20px; }
 #dxProblem, #dxSolution { white-space: pre-line; line-height: 1.9; }
+
+/* ===== Garages page filters ===== */
+.g-filters { display: flex; flex-wrap: wrap; gap: .5rem; }
+.g-filter {
+  background: transparent; color: var(--text);
+  border: 1px solid rgba(255, 255, 255, .2);
+  padding: .45rem 1.1rem; border-radius: 50px;
+  font-family: inherit; transition: .2s;
+}
+.g-filter:hover { border-color: var(--yellow); color: #fff; }
+.g-filter.active {
+  background: var(--yellow); border-color: var(--yellow);
+  color: #0d111c; font-weight: 700;
+}
+.g-note { color: #9aa3b5; }
+
+/* ===== Category flags ===== */
+.cat-flag {
+  font-size: 5rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .55);
+  border: 2px solid rgba(255, 255, 255, .15);
+  transition: transform .25s;
+}
+.cat-card:hover .cat-flag { transform: scale(1.08); }
+
+/* ===== How it works: steps ===== */
+.step {
+  position: relative; overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-top: 3px solid transparent;
+  border-radius: 10px; padding: 34px 28px;
+  transition: transform .3s, box-shadow .3s, border-color .3s;
+}
+.step:hover {
+  transform: translateY(-8px);
+  border-top-color: var(--yellow);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(251, 185, 27, .25);
+}
+
+/* الأيقونة بدائرة */
+.step i {
+  display: grid; place-items: center;
+  width: 76px; height: 76px; margin: 0 auto 16px;
+  border-radius: 50%; font-size: 2rem;
+  background: rgba(251, 185, 27, .12);
+  border: 2px solid rgba(251, 185, 27, .35);
+  transition: background .3s, color .3s, transform .3s;
+}
+.step:hover i {
+  background: var(--yellow); color: #111;
+  transform: scale(1.08) rotate(-6deg);
+}
+
+/* الرقم الكبير الباهت */
+.step::before {
+  position: absolute; top: 4px; inset-inline-end: 16px;
+  font-family: 'Oswald', sans-serif; font-size: 3.6rem; font-weight: 700;
+  color: rgba(255, 255, 255, .05); line-height: 1;
+}
+.row > :nth-child(1) > .step::before { content: '01'; }
+.row > :nth-child(2) > .step::before { content: '02'; }
+.row > :nth-child(3) > .step::before { content: '03'; }
+
+/* ظهور تدريجي أثناء النزول بالصفحة (كروم وإيدج) */
+@supports (animation-timeline: view()) {
+  .step {
+    animation: stepIn linear backwards;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* ===== Logo ===== */
+.brand-logo { height: 48px; width: auto; transition: transform .25s; }
+.brand:hover .brand-logo { transform: rotate(-8deg) scale(1.08); }
+.brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-name { font-size: 26px; font-weight: 700; color: #fff; }
+.brand-tag { font-size: 11px; font-weight: 500; color: var(--yellow); letter-spacing: .5px; }
+html[lang="ar"] .brand-tag { letter-spacing: 0; font-size: 12px; }
+
+/* ===== History page ===== */
+.hist-card {
+  background: var(--card); border: 1px solid rgba(255,255,255,.08);
+  border-inline-start: 4px solid var(--yellow); border-radius: 10px; padding: 22px;
+}
+.hist-date { color: #9aa3b5; margin-inline-end: 10px; }
+.hist-chip {
+  font-size: 12px; border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px; padding: 2px 10px; color: var(--text);
+}
+.hist-desc { color: var(--text); }
+.hist-text { white-space: pre-line; line-height: 1.9; }
+.hist-card h6 { color: var(--yellow); }
+
+/* ===== About page ===== */
+.about-card {
+  background: var(--card); border: 1px solid rgba(255,255,255,.08);
+  border-top: 4px solid var(--yellow); border-radius: 10px; padding: 26px; height: 100%;
+}
+.about-card i { font-size: 2rem; color: var(--yellow); }
+.about-card h5 { margin: 12px 0 8px; }
+.about-card p { line-height: 1.9; }
+
+/* روابط نتيجة قطع الغيار */
+#ptResult a:not(.btn) {
+  color: var(--yellow);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#ptResult a:not(.btn):hover {
+  color: #fff;
+}
