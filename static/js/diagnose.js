@@ -149,11 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
     $('lat').value = pos ? pos.coords.latitude : '';
     $('lng').value = pos ? pos.coords.longitude : '';
 
+    // مهلة 70 ثانية: بعدها نوقف الانتظار ونعرض رسالة وبديل (الكراجات بدون ذكاء اصطناعي)
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 70000);
     try {
       const res = await fetch(location.pathname, {
         method: 'POST',
         body: new FormData(form),
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        signal: ctrl.signal,
       });
       const data = await res.json();
       if (!data.ok) {
@@ -166,8 +170,17 @@ document.addEventListener('DOMContentLoaded', () => {
         $('dxResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } catch (err) {
-      showErr('__all__', t('dx_err_net'));
+      console.error('Diagnose request failed:', err);
+      const ar = document.documentElement.lang === 'ar';
+      const box = $('err___all__');
+      box.textContent = t('dx_err_net') + ' ';
+      const a = document.createElement('a');
+      a.href = '/garages/';
+      a.className = 'text-yellow';
+      a.textContent = ar ? 'تصفّح الكراجات مباشرة بدون تشخيص' : 'Browse garages directly without a diagnosis';
+      box.appendChild(a);
     } finally {
+      clearTimeout(timer);
       btn.disabled = false;
       $('dxLoading').classList.add('d-none');
     }

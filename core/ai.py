@@ -23,6 +23,10 @@ ORIGIN_BY_MAKE = {
     'بيجو': 'french', 'رينو': 'french', 'ستروين': 'french', 'سيتروين': 'french',
 }
 
+# مهلة كل طلب لـ Gemini (بالملي ثانية) والمهلة الكلية لكل عملية (بالثواني)
+REQUEST_TIMEOUT_MS = 20000
+TOTAL_BUDGET_S = 30
+
 # لو الموديل الأساسي مزدحم (خطأ 503) نجرّب هدول بالترتيب
 BACKUP_MODELS = ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite']
 
@@ -100,7 +104,9 @@ def diagnose_image(image_file, make, description=''):
             parts.append('Customer description: "' + description + '".')
         contents.append(PROMPT.format(make=make, inputs=' '.join(parts)))
 
-        client = genai.Client(api_key=api_key)
+        client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(timeout=REQUEST_TIMEOUT_MS))
         config = types.GenerateContentConfig(
             temperature=0.4,
             response_mime_type='application/json',
@@ -108,20 +114,19 @@ def diagnose_image(image_file, make, description=''):
 
         resp = None
         last_err = None
+        deadline = time.monotonic() + TOTAL_BUDGET_S
         for model in [settings.AI_MODEL] + BACKUP_MODELS:
-            for attempt in range(2):
-                try:
-                    resp = client.models.generate_content(
-                        model=model, contents=contents, config=config)
-                    break
-                except Exception as e:
-                    last_err = e
-                    print('AI RETRY:', model, repr(e)[:120])
-                    time.sleep(1.5)
-            if resp is not None:
+            if time.monotonic() > deadline:
+                break   # خلص الوقت: نرجع الرد البديل بدل ما نخلّي الزبون ينتظر
+            try:
+                resp = client.models.generate_content(
+                    model=model, contents=contents, config=config)
                 break
+            except Exception as e:
+                last_err = e
+                print('AI RETRY:', model, repr(e)[:120])
         if resp is None:
-            raise last_err
+            raise last_err or RuntimeError('AI time budget exceeded')
 
         result = json.loads(re.search(r'\{.*\}', resp.text, re.S).group())
         result['problem'] = _as_text(result.get('problem'))
@@ -190,19 +195,23 @@ PICK_PROMPT = (
 def _generate(contents, config, need_text=False):
     """يجرب الموديل الأساسي ثم الاحتياطي. need_text: الرد الفاضي بيعتبر فشل. بيرجع None لو كله فشل."""
     from google import genai
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    from google.genai import types as _types
+    client = genai.Client(
+        api_key=settings.GEMINI_API_KEY,
+        http_options=_types.HttpOptions(timeout=REQUEST_TIMEOUT_MS))
+    deadline = time.monotonic() + TOTAL_BUDGET_S
     for model in [settings.AI_MODEL] + BACKUP_MODELS:
-        for attempt in range(2):
-            try:
-                resp = client.models.generate_content(
-                    model=model, contents=contents, config=config)
-                if need_text and not (resp.text or '').strip():
-                    print('AI EMPTY (part):', model)
-                    break   # رد فاضي: جرّب الموديل التالي
-                return resp
-            except Exception as e:
-                print('AI RETRY (part):', model, repr(e)[:200])
-                time.sleep(1.5)
+        if time.monotonic() > deadline:
+            break
+        try:
+            resp = client.models.generate_content(
+                model=model, contents=contents, config=config)
+            if need_text and not (resp.text or '').strip():
+                print('AI EMPTY (part):', model)
+                continue   # رد فاضي: جرّب الموديل التالي
+            return resp
+        except Exception as e:
+            print('AI RETRY (part):', model, repr(e)[:200])
     return None
 
 
